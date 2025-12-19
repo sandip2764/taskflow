@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Task;
+use App\Observers\TaskObserver;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -25,6 +27,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureRateLimiting();
+
+        // Register Task Observer
+        Task::observe(TaskObserver::class);
     }
 
     protected function configureRateLimiting(): void

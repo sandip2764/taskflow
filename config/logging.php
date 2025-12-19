@@ -127,6 +127,14 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        // Task specific log channel
+        'tasks' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/tasks.log'),
+            'level' => 'info',
+            'days' => 30,
+        ],
+
     ],
 
 ];

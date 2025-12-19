@@ -13,6 +13,11 @@ Route::middleware(['throttle:auth'])->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
 
+// Heavy operations with stricter limit
+Route::middleware(['auth:sanctum', 'throttle:heavy'])->group(function () {
+    Route::get('/tasks/statistics', [TaskController::class, 'statistics']);
+});
+
 // Protected routes with api rate limiter
 Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     
@@ -28,7 +33,3 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::apiResource('categories', CategoryController::class)->only(['index', 'store', 'show']);
 });
 
-// Heavy operations with stricter limit
-Route::middleware(['auth:sanctum', 'throttle:heavy'])->group(function () {
-    Route::get('/tasks/statistics', [TaskController::class, 'statistics']);
-});
