@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use App\Http\Resources\TaskCollection;
+use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Illuminate\Http\Request;
 
@@ -44,7 +46,7 @@ class TaskController extends Controller
 
         $tasks = $query->paginate($request->get('per_page', 15));
 
-        return response()->json($tasks, 200);
+        return new TaskCollection($tasks);
     }
 
     /**
@@ -60,10 +62,9 @@ class TaskController extends Controller
             $task->categories()->sync($request->categories);
         }
 
-        return response()->json([
-            'message' => 'Task created successfully',
-            'task'    => $task->load('categories'),
-        ], 201);
+        return (new TaskResource($task))
+            ->response()
+            ->setStatusCode(201);
     }
 
     /**
@@ -75,7 +76,7 @@ class TaskController extends Controller
             ->where('user_id', $request->user()->id)
             ->findOrFail($id);
 
-        return response()->json(['task' => $task], 200);
+        return new TaskResource($task);
     }
 
     /**
@@ -91,10 +92,7 @@ class TaskController extends Controller
             $task->categories()->sync($request->categories ?? []);
         }
 
-        return response()->json([
-            'message' => 'Task updated successfully',
-            'task'    => $task->load('categories'),
-        ],200);
+        return new TaskResource($task);
     }
 
     /**
@@ -138,9 +136,7 @@ class TaskController extends Controller
 
         $task->restore();
 
-        return response()->json([
-            'message' => 'Task restored successfully',
-            'task'    => $task,
-        ],200);
+        return (new TaskResource($task))
+            ->additional(['message' => 'Task restored successfully']);
     }
 }

@@ -19,9 +19,7 @@ class Task extends Model
         'due_date',
     ];
     protected $casts = [
-        'due_date' => 'date',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'due_date' => 'datetime',
     ];
 
     /**
@@ -81,6 +79,15 @@ class Task extends Model
         return $query->whereHas('categories', function ($q) use ($categoryId) {
             $q->where('categories.id', $categoryId);
         });
+    }
+
+    public function isOverdue(): bool
+    {
+        if (!$this->due_date || $this->status === 'completed') {
+            return false;
+        }
+        
+        return $this->due_date->isPast();
     }
     
 }

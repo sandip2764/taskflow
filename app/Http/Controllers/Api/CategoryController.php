@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 
 class CategoryController extends Controller
@@ -15,9 +16,7 @@ class CategoryController extends Controller
     {
         $categories = Category::withCount('tasks')->get();
 
-        return response()->json([
-            'categories' => $categories,
-        ], 200);
+        return CategoryResource::collection($categories);
     }
 
     /**
@@ -27,10 +26,10 @@ class CategoryController extends Controller
     {
         $category = Category::create($request->validated());
 
-        return response()->json([
-            'message'  => 'Category created successfully',
-            'category' => $category,
-        ], 201);
+        return (new CategoryResource($category))
+            ->response()
+            ->setStatusCode(201);
+
     }
 
     /**
@@ -40,8 +39,6 @@ class CategoryController extends Controller
     {
         $category = Category::with('tasks')->findOrFail($id);
 
-        return response()->json([
-            'category' => $category,
-        ],200);
+        return new CategoryResource($category);
     }
 }
